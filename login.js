@@ -33,9 +33,12 @@ submit_btn.onclick = function() {
 // Save login information for future use
 function savelogin(hip, user, pass) {
 	user_obj.hip = hip;
-	user_obj.user = user;
-	user_obj.pass = pass;
+	user_obj.username = user;
+	user_obj.password = pass;
 	localStorage.setItem('user_obj', JSON.stringify(user_obj));
+
+	// Update credentials variable
+	retrievelogin();
 }
 
 // Retrieve saved login information
@@ -48,8 +51,22 @@ function retrievelogin() {
 // Retrieve user info when page loads
 window.onload = function(event) {
 	retrievelogin();
+	connect();
 }
 
+function connect() {
+	// Use host ip to generate authentication URL
+	url = credentials.hip + "/api/v1/auth/login/";
+	
+	// Create JSON object from login credentials.
+	data = JSON.stringify(credentials);
+    
+	console.log("Sending POST request");
+
+	$.post(url, data, function () {
+		alert("Data: " + data + "\nStatus: " + status);
+	});
+}
 
 
 
