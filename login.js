@@ -55,26 +55,69 @@ window.onload = function(event) {
 }
 
 function connect() {
-	// Use host ip to generate authentication URL
-	url = credentials.hip + "/api/v1/auth/login/";
+	// Use host ip to generate authentication URL (prepend with http so not relative URI)
+	url = "http://" + credentials.hip + "/api/v1/auth/login/";
 	
 	// Create JSON object from login credentials.
 	data = JSON.stringify(credentials);
     
 	console.log("Sending POST request");
 
-	$.post(url, data, function () {
-		alert("Data: " + data + "\nStatus: " + status);
-	});
+	makeCorsRequest('GET', url);
+	
 }
 
+	
+	// Create the XHR object.
+function createCORSRequest(method, url) {
+	var xhr = new XMLHttpRequest();
+    if ("withCredentials" in xhr) {
+    	// XHR for Chrome/Firefox/Opera/Safari.
+    	xhr.open(method, url, true);
+  	} else if (typeof XDomainRequest != "undefined") {
+    	// XDomainRequest for IE.
+    	xhr = new XDomainRequest();
+    	xhr.open(method, url);
+  	} else {
+    	// CORS not supported.
+    	xhr = null;
+  	}
+  	return xhr;
+}
 
+// Helper method to parse the title tag from the response.
+function getTitle(text) {
+	return text.match('<title>(.*)?</title>')[1];
+}
 
+// Make the actual CORS request.
+function makeCorsRequest(method, url) {
+	// This is a sample server that supports CORS.
+	// var url = 'http://html5rocks-cors.s3-website-us-east-1.amazonaws.com/index.html';
 
-    // on cancel dont do anything
+	var xhr = createCORSRequest(method, url);
+	if (!xhr) {
+		alert('CORS not supported');
+		return;
+	}
 
+	// Response handlers.
+	xhr.onload = function() {
+		var text = xhr.responseText;
+		var title = getTitle(text);
+		alert('Response from CORS request to ' + url + ': ' + title);
+	};
 
-    // on login is clicked, run the connect.js with fields info
+	xhr.onerror = function(error) {
+		alert('Woops, there was an error making the request.');
+		console.log(error);
+	};
 
-
-    // if checkbox is checked save the fields for next time
+	// Add fields to the request
+	xhr.setRequestHeader('username', credentials.username);
+	xhr.setRequestHeader('password', credentials.password);
+	// xhr.setRequestHeader('withCredentials', false);
+	// xhr.setRequestHeader("contentType", "application/x-www-form-urlencoded");
+	console.log(xhr);
+	xhr.send();
+}
