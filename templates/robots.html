@@ -4,12 +4,38 @@
 
 {% extends "header.html" %}
 
+
 {% block body %}
-	<ul class="nav nav-pills">
-		{% for item in robotlist %}
-	  		<li role="presentation"><a href="#">{{item}}</a></li>
+<div role="tabpanel">
+
+	<ul class="nav nav-tabs nav-justified" role="tablist" style="background-color:#ede7e1;">
+		<!-- List out avaliable robots -->
+		{% for robot in robotlist %}
+			<li role="presentation"><a href="#{{ robot }}" aria-controls="{{ robot }}" role="tab" 
+				data-toggle="tab">{{ robot }}</a></li>
 		{% endfor %}
+		
 	</ul>
 
+	<div class="tab-content" >
+		{% for robot in robotlist %}
+	  		<div role="tabpanel" class="tab-pane fade" id="{{ robot }}">
+	  			{% for pose_name in robotlist[robot] %}
+	  				<div class="btn-group" role="group" style="display:flex">
+	  					<button type="button" class="btn btn-primary btn-lg" 
+	  						id="{{ pose_name }}" style="margin-top:15px; flex:1">{{ pose_name }}</button>
+	  				</div>
+	  			{% endfor %}
+	  		</div>
+		{% endfor %}
+	</div>
+
+
+	<div class="robot-info">
+		
+	</div>
+</div>
 
 {% endblock %}
+
+

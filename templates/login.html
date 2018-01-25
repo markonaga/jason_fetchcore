@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<title>Innovation Matrix Fetchcore WebApp</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> <!-- INSERT INNOVATION LOGO HERE  -->
-</head> 
+{% extends "header.html" %}
 
-<p>Innovation Matrix WebApp</p> 
+
+{% block body %}
+
 
 <div class="container">
     <div class="row">
@@ -27,6 +21,7 @@
                 <div class="form-group">
                     <label for="inputPassword" class="sr-only">Password</label>
                     <input type="password" id="inputPassword" name="pass" class="form-control" placeholder="Password" required>
+                </div>
                 <button type="submit" class="btn btn-primary btn-block">Log in</button>
             </form>
             <br>
@@ -34,6 +29,6 @@
     </div>
 </div>
 
-</html>
+{% endblock %}
 
 

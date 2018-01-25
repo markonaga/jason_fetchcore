@@ -22,7 +22,7 @@ assets.register('main_js', js)
 
 @app.route('/')
 def index():
-	return redirect(url_for('displayrobots'))		#for developing html remove later
+	# return redirect(url_for('displayrobots'))		#for developing html remove later
 	if 'username' in session:
 		#Login succeeded
 		return redirect(url_for('displayrobots'))
@@ -74,18 +74,16 @@ def clearsession():
 @app.route('/displayrobots/')
 def displayrobots():
 	#Get robot information (IDs, Poses) using SDK
-	robotlist = ["domo", "arigatou", "mister", "roboto"]
+	robotlist = {'robot1': ['pose1', 'pose2', 'pose3'],
+	 'robot2': ['pose21', 'pose22', 'pose23'],
+	 'robot3': ['pose31', 'pose32', 'pose33'],
+	 'robot4': ['pose41', 'pose42', 'pose43', 'pose53']}
 	return render_template('robots.html', robotlist=robotlist)
 
 
 @app.route('/profile/<name>')
 def profile(name):
 	return render_template("profile.html", name=name)
-
-@app.route("/api/v1/users/create/", methods=['POST'])
-def create_user():
-	return "poop"
-
 	
 
 if __name__ == '__main__':
