@@ -22,6 +22,7 @@ assets.register('main_js', js)
 
 @app.route('/')
 def index():
+	return redirect(url_for('displayrobots'))		#for developing html remove later
 	if 'username' in session:
 		#Login succeeded
 		return redirect(url_for('displayrobots'))
@@ -30,7 +31,7 @@ def index():
 
 
 #Get user info and saves to the session
-@app.route('/login', methods=['POST'])
+@app.route('/login/', methods=['POST'])
 def login():
 	if request.method == 'POST':
 		session['username'] = request.form.get('username', None)
@@ -44,7 +45,7 @@ def login():
 		
 #Connect to  fetchcore for authorization token
 @cross_origin
-@app.route('/connectfetch')
+@app.route('/connectfetch/')
 def connectfetch():
 	#Connect to fetchcore
 	url = "https://" + session['hostIP'] + "/api/v1/auth/login/"
@@ -61,7 +62,7 @@ def connectfetch():
 
 
 #Clear session and require new login
-@app.route('/clearsession')
+@app.route('/clearsession/')
 def clearsession():
 	session.pop('username', None)
 	session.pop('password', None)
@@ -70,7 +71,7 @@ def clearsession():
 	return redirect(url_for('index'))
 	
 
-@app.route('/displayrobots')
+@app.route('/displayrobots/')
 def displayrobots():
 	#Get robot information (IDs, Poses) using SDK
 	robotlist = ["domo", "arigatou", "mister", "roboto"]

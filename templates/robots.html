@@ -1,13 +1,15 @@
 <!-- https://pythonprogramming.net/flask-user-dashboard/?completed=/flask-homepage-completed/ -->
 <!-- https://pythonprogramming.net/flask-user-dashboard/?completed=/flask-homepage-completed/ -->
 <!-- above links are how to dynamically create the robot tabs -->
-<!doctype html>
 
-<ul class="nav nav-tabs">
-	{% for item in robotlist %}
-  		<li role="presentation"><a href="#">{{item}}</a></li>
-	{% endfor %}
-</ul>
+{% extends "header.html" %}
+
+{% block body %}
+	<ul class="nav nav-pills">
+		{% for item in robotlist %}
+	  		<li role="presentation"><a href="#">{{item}}</a></li>
+		{% endfor %}
+	</ul>
 
 
-
+{% endblock %}
