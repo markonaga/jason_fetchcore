@@ -87,17 +87,18 @@ def displayrobots():
 	robot_dict = {}
 	for robot in robots:
 		#Get each robots map
-    	robots_map = robot.map
+		robots_map = robot.map
 
     	#Temporary list to append pose names
-    	temp = []
+		temp = []
 
     	#Get poses from each map and append to list
-    	for pose in robots_map.poses:
-    		temp.append(pose.name)
+		for pose in robots_map.poses:
+			temp.append(pose.name)
 
     	#Store pose list corresponding to robot key
-    	robot_dict[robot.name] = temp
+		robot_dict[robot.name] = temp
+		print(robot.name)
 
 	return render_template('robots.html', robotlist=robot_dict)
 
