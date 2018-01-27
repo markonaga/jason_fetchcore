@@ -11,7 +11,7 @@ import os
 from fetchcore import configuration
 from fetchcore.resources.maps import Map
 from fetchcore.resources.robots import Robot
-# from fetchcore.resources.actions import NavigateAction
+from fetchcore.resources.tasks.actions.definitions import NavigateAction
 from fetchcore.resources import Task
 
 
@@ -27,7 +27,7 @@ assets.register('main_js', js)
 
 @app.route('/')
 def index():
-	if 'username' in session:
+	if 'token' in session:
 		#Login succeeded
 		return redirect(url_for('displayrobots'))
 
@@ -57,6 +57,7 @@ def connectfetch():
 	try:
 		configuration.initialize_global_client(session['username'], session['password'], session['hostIP'], port, ssl)
 		print("Authorized")
+		session['token'] = True
 		return redirect(url_for('displayrobots'))
 	except:
 		print("You are not authorized. Check your login credentials and try again.")
@@ -102,9 +103,35 @@ def displayrobots():
 
 	return render_template('robots.html', robotlist=robot_dict)
 
-@app.route('/sendpose/<int:number>')
-def sendpose(number):
-	return "Sending to Pose: " + number
+@app.route('/sendpose/<robotdata>')
+def sendpose(robotdata):
+	#robotdata is in the form robot_name+pose_name
+	data = robotdata.split('+')
+	robot_n = data[0] 
+	pose_n = data[1]
+	print("Sending "+ robot_n + " to Pose: " + pose_n)
+
+	#goal_pose is in form {"x": x, "y": y, "theta": theta}
+	goal_pose = {}
+
+	#Get pose position						#LEFT OFF HERE 1/26/18 -> NEED TO INCREMENT THRHU MAP THEN THRU POSES THEN NAMES
+	for pose in Map.list:
+		if pose.name == pose_n:
+			goal_pose = {
+				"x": pose.x,
+				"y": pose.y,
+				"theta": pose.theta
+    		}
+
+	# Create nav action
+	nav_action = NavigateAction(goal_pose=goal_pose)
+    # Create nav task
+	nav_task = Task(name="Nav to Poses", type="NAVIGATE",
+                    actions=[nav_action], robot=robot_n)
+    # Save task to update remote server
+	# nav_task.save()
+
+	return render_template("profile.html", name=robotdata)
 
 
 @app.route('/profile/<name>')
