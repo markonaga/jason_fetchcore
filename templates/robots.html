@@ -15,10 +15,10 @@
 	<div class="tab-content" style="margin-bottom: 75px">
 		{% for robot in robotlist %}
 	  		<div role="tabpanel" class="tab-pane fade" id="{{ robot }}">
-	  			{% for pose_name in robotlist[robot] %}
+	  			{% for pose in robotlist[robot] %}
 	  				<div class="btn-group" role="group" style="display:flex">
-	  					<button type="button" class="btn btn-primary btn-lg" id="{{ pose_name }}" style="margin-top:15px; flex:1" 
-	  						onclick="window.location.href='{{url_for('sendpose', robotdata=robot+ '+' +pose_name )}}';">{{ pose_name }}
+	  					<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" style="margin-top:15px; flex:1" 
+	  						onclick="window.location.href='{{url_for('sendpose', robotdata=robot+ '+' +pose.name )}}';">{{ pose.name }}
 	  					</button>
 	  				</div>
 	  			{% endfor %}
