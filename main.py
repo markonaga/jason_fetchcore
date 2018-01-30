@@ -1,6 +1,7 @@
 # for debug:
 from __future__ import print_function # In python 2.7
 import sys
+from datetime import datetime
 
 # Flask imports
 from flask import Flask, request, render_template, url_for, redirect, session, flash
@@ -73,14 +74,13 @@ def connectfetch():
 # Clear session and require new login
 @app.route('/clearsession/<e>')
 def clearsession(e):
-	session.pop('username', None)
-	session.pop('password', None)
-	session.pop('hostIP', None)
-	session.pop('logged_in', None)
+	# session.pop('username', None)
+	# session.pop('password', None)
+	# session.pop('hostIP', None)
+	# session.pop('logged_in', None)
 	session.clear()
 	flash(e)
 	return render_template("login.html")
-	# return redirect(url_for('index'))
 	
 
 # Get robot information (IDs, Poses) using SDK
@@ -133,10 +133,9 @@ def sendpose(robotdata):
 
     # Save task to update remote server
 	nav_task.save()
-	flash("Sent " + robot_n + " to " + pose_n)
+	flash("Sent " + robot_n + " to " + pose_n + " at " + str(datetime.utcnow()))
 
 	return render_template('robots.html', robotlist=robot_dict)
-	# return render_template("profile.html", name=robotdata)
 
 
 # Dummy route for testing
