@@ -46,7 +46,8 @@ def login():
 		session['username'] = request.form.get('username', None)
 		session['password'] = request.form.get('pass', None)
 		session['hostIP'] = request.form.get('hostIP', None)
-
+		session.permanent = True
+		
 		return redirect(url_for('connectfetch'))
 
 	return render_template('login.html')
