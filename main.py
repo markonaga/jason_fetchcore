@@ -34,7 +34,7 @@ def index():
 	if 'logged_in' in session:
 		# Login information saved from previous use:
 		return redirect(url_for('connectfetch'))
-		
+
 	return render_template("login.html")
 
 
@@ -67,18 +67,20 @@ def connectfetch():
 	except:
 		error = "You are not authorized. Check your login credentials and try again."
 
-	return redirect(url_for('clearsession'))
+	return redirect(url_for('clearsession', e = error))
 	
 
 # Clear session and require new login
-@app.route('/clearsession/')
-def clearsession():
+@app.route('/clearsession/<e>')
+def clearsession(e):
 	session.pop('username', None)
 	session.pop('password', None)
 	session.pop('hostIP', None)
 	session.pop('logged_in', None)
 	session.clear()
-	return redirect(url_for('index'))
+	flash(e)
+	return render_template("login.html")
+	# return redirect(url_for('index'))
 	
 
 # Get robot information (IDs, Poses) using SDK
@@ -131,13 +133,16 @@ def sendpose(robotdata):
 
     # Save task to update remote server
 	nav_task.save()
+	flash("Sent " + robot_n + " to " + pose_n)
 
-	return render_template("profile.html", name=robotdata)
+	return render_template('robots.html', robotlist=robot_dict)
+	# return render_template("profile.html", name=robotdata)
 
 
 # Dummy route for testing
 @app.route('/profile/<name>')
 def profile(name):
+	flash(name)
 	return render_template("profile.html", name=name)
 	
 
