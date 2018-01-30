@@ -32,7 +32,7 @@ robot_dict = {}
 
 @app.route('/')
 def index():
-	if 'logged_in' in session:
+	if session.get('logged_in'):
 		# Login information saved from previous use:
 		return redirect(url_for('connectfetch'))
 
@@ -52,7 +52,7 @@ def login():
 	return render_template('login.html')
 
 		
-# Connect to  fetchcore for authorization token
+# Connect to Fetchcore for authorization token
 @app.route('/connectfetch/')
 def connectfetch():
 	error = ''
@@ -74,10 +74,6 @@ def connectfetch():
 # Clear session and require new login
 @app.route('/clearsession/<e>')
 def clearsession(e):
-	# session.pop('username', None)
-	# session.pop('password', None)
-	# session.pop('hostIP', None)
-	# session.pop('logged_in', None)
 	session.clear()
 	flash(e)
 	return render_template("login.html")
@@ -133,6 +129,8 @@ def sendpose(robotdata):
 
     # Save task to update remote server
 	nav_task.save()
+
+	# Notify the user that their request has been processed
 	flash("Sent " + robot_n + " to " + pose_n + " at " + str(datetime.utcnow()))
 
 	return render_template('robots.html', robotlist=robot_dict)
