@@ -76,6 +76,7 @@ def connectfetch():
 @app.route('/clearsession/<e>')
 def clearsession(e):
 	session.clear()
+	robot_dict.clear()
 	flash(e)
 	return render_template("login.html")
 	
@@ -84,7 +85,10 @@ def clearsession(e):
 @app.route('/displayrobots/')
 def displayrobots():
 
-	#Get a list of every robot
+	# Robot dictionary for saving names and poses
+	# robot_dict = {}
+
+	# Get a list of every robot
 	robots = Robot.list()
 
 	for robot in robots:
