@@ -4,7 +4,6 @@ click==6.7
 cryptography==2.1.4
 DateTime==4.2
 enum34==1.1.6
-fetchcorepy==0.17.21
 Flask==0.12.2
 Flask-Assets==0.12
 gunicorn==19.7.1
@@ -25,3 +24,4 @@ webassets==0.12.1
 websocket-client==0.40.0
 Werkzeug==0.14.1
 zope.interface==4.4.3
+fetchcorepy-0.17.21-py2-none-any.whl
