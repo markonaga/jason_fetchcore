@@ -63,6 +63,8 @@ def connectfetch():
     # Connect to Fetchcore using your credentials
 	try:
 		configuration.initialize_global_client(session['username'], session['password'], session['hostIP'], port, ssl)
+		# r = requests.post('https://' + session['hostIP'] + '/api/v1/auth/login/', 
+		# 	data = {'username' : session['username'], 'password' : session['password']})
 		session['logged_in'] = True
 		return redirect(url_for('displayrobots'))
 
