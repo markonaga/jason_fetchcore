@@ -27,12 +27,6 @@ assets = Environment(app)
 # Register bundle name to be used in template
 assets.register('main_js', js)
 
-# Global robot dictionary for optimization purposes
-robot_dict = {}
-
-# Global list of robot names for optimization purposes
-robot_names = []
-
 
 @app.route('/')
 def index():
@@ -50,6 +44,8 @@ def login():
 		session['username'] = request.form.get('username', None)
 		session['password'] = request.form.get('pass', None)
 		session['hostIP'] = request.form.get('hostIP', None)
+		session['robot_names'] = []
+		session['robot_poses'] = {}
 		session.permanent = True
 		
 		return redirect(url_for('connectfetch'))
@@ -82,8 +78,6 @@ def connectfetch():
 @app.route('/clearsession/<e>')
 def clearsession(e):
 	session.clear()
-	robot_dict.clear()
-	robot_names = []
 	flash(e)
 	return render_template("login.html")
 	
@@ -103,27 +97,27 @@ def displayrobots():
 
     	# Get poses from each map and append to list
 		for pose in robots_map.poses:
-			temp.append(pose)
+			temp.append(pose.name)
 
     	# Store pose list corresponding to robot key in global dictionary
-		robot_dict[robot.name] = temp
+		session['robot_poses'][robot.name] = temp
 
 		# Fill the robot_names list with each name on the fecthcore instance
-		robot_names.append(robot.name)
+		session['robot_names'].append(robot.name)
 
-	selected_robot = robot_names[0]
+	selected_robot = session['robot_names'][0]
 
-	return render_template('robots.html', robotlist = robot_names, 
+	return render_template('robots.html', robotlist = session['robot_names'], 
 						   				  selected_robot = selected_robot,
-						   				  robot_poses = robot_dict[selected_robot])
+						   				  robot_poses = session['robot_poses'][selected_robot])
 
 
 @app.route('/displaynext/<selected_robot>')
 def displaynext(selected_robot):
 
-	return render_template('robots.html', robotlist = robot_names, 
+	return render_template('robots.html', robotlist = session['robot_names'], 
 						   				  selected_robot = selected_robot,
-						   				  robot_poses = robot_dict[selected_robot])
+						   				  robot_poses = session['robot_poses'][selected_robot])
 
 
 # Creates a navtask to send robot to requested pose
@@ -135,12 +129,13 @@ def sendpose(robotdata):
 	pose_n = data[1]
 
 	# Get the entire pose object from our saved dictionary
-	pose = [elem for elem in robot_dict[robot_n] if elem.name == pose_n]
+	# pose = [elem for elem in session['robot_poses'][robot_n] if elem == pose_n]
+	pose = getPose(robot_n, pose_n)
 
 	goal_pose = {
-		"x": pose[0].x,
-		"y": pose[0].y,
-		"theta": pose[0].theta
+		"x": pose.x,
+		"y": pose.y,
+		"theta": pose.theta
 		}
 
 	# Create nav action
@@ -156,9 +151,27 @@ def sendpose(robotdata):
 	# Notify the user that their request has been processed
 	flash("Sent " + robot_n + " to " + pose_n + " at " + str(datetime.utcnow()))
 
-	return render_template('robots.html', robotlist = robot_names, 
+	return render_template('robots.html', robotlist = session['robot_names'], 
 						   				  selected_robot = robot_n,
-						   				  robot_poses = robot_dict[robot_n])
+						   				  robot_poses = session['robot_poses'][robot_n])
+
+
+
+def getPose(robot_name, pose_name):
+	# Get a list of every robot
+	robots = Robot.list()
+	# Cycle through each robot
+	for robot in robots:
+		# Look for the correct robot
+		if robot.name == robot_name:
+			# Load the robots map
+			robots_map = robot.map
+			# Cycle through each pose
+			for pose in robots_map.poses:
+				# Return the correct pose object
+				if pose.name == pose_name:
+					return pose
+		
 
 
 # Dummy route for testing
@@ -169,7 +182,7 @@ def profile(name):
 	
 
 if __name__ == '__main__':
-	app.run()
+	app.run(debug=True)
 
 
 

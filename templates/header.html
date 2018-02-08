@@ -4,17 +4,13 @@
 	<meta charset="utf-8">
 	<title>Innovation Matrix Fetchcore WebApp</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- WHEN THIS IS DONE FIGURE OUT HOW TO GET THESE LOCAL SCRIPTS TO WORK SO DONT HAVE TO DOWNLOAD -->
-	<!-- <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/bootstrap.min.css') }}">
-	<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.2.1.min.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script> -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<link rel="shortcut icon" href="{{ url_for('static', filename='images/IMlogo.jpg') }}"> 
 </head> 
 
-<header>
+<!-- <header>
 	<div class="container-fluid" style="display:flex; width:100%;">
 		<div class="navbar-header" style="flex:1">
 	      <a class="navbar-brand" href="/" align="left">
@@ -28,6 +24,29 @@
 			</button></a>
 			<div style="margin-right: 1px; margin-top: 5px; margin-bottom: 30px; width:100%"  class="container-fluid">	
 			</div>
+		</div>
+	</div>
+</header> -->
+
+<header>
+	<div class="navbar navbar-default"">
+		<div class="container-fluid">
+
+			<!-- Logo -->
+			<div class="navbar-header">
+		    	<a class="navbar-brand" href="/" align="left">
+					<img style="max-height: 100%;" 
+					src="{{ url_for('static', filename='images/IMlogo.jpg') }}">
+				</a>
+		    </div>
+
+		    <!-- Logout -->
+		    <div class="nav navbar-nav navbar-right" style="font-size: 5">
+		    	<li><a href="/clearsession/Logged Out">Log Out</a></li>
+		    </div>
+
+
+
 		</div>
 	</div>
 </header>

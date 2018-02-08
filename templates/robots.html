@@ -21,7 +21,7 @@
 	<div class="row">
 		{% for pose in robot_poses %}
 			<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" 
-			onclick="window.location.href='{{url_for('sendpose', robotdata=selected_robot+ '+' +pose.name )}}';">{{ pose.name }}</button>
+			onclick="window.location.href='{{url_for('sendpose', robotdata=selected_robot+ '+' +pose )}}';">{{ pose }}</button>
 		{% endfor %}
 	</div>
 </div>
