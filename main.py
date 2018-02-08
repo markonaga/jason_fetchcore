@@ -86,10 +86,6 @@ def clearsession(e):
 # Get robot information (IDs, Poses) using SDK
 @app.route('/displayrobots/')
 def displayrobots():
-
-	# Robot dictionary for saving names and poses
-	# robot_dict = {}
-
 	# Get a list of every robot
 	robots = Robot.list()
 
