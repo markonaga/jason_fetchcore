@@ -1,35 +1,51 @@
 {% extends "header.html" %}
 
 {% block body %}
-<div role="tabpanel">
 
-	<ul class="nav nav-tabs nav-justified" role="tablist" style="background-color:#ede7e1;">
+<div class="dropdown">
+	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" 
+		data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> {{ selected_robot }} <span class="caret"></span>
+	</button>
+	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 		<!-- List out avaliable robots -->
 		{% for robot in robotlist %}
-			<li role="presentation"><a href="#{{ robot }}" aria-controls="{{ robot }}" role="tab" 
-				data-toggle="tab">{{ robot }}</a></li>
+			{% if robot != selected_robot %}
+				<!-- <li><a href="#{{ robot }}">{{ robot }} </a></li> -->
+				<li onclick="window.location.href='{{url_for('displaynext',selected_robot=robot)}}'">{{ robot }}</li>
+			{% endif %}
 		{% endfor %}
-		
 	</ul>
+</div>
 
-	<div class="tab-content" style="margin-bottom: 75px">
-		{% for robot in robotlist %}
-	  		<div role="tabpanel" class="tab-pane fade" id="{{ robot }}">
-	  			{% for pose in robotlist[robot] %}
-	  				<div class="btn-group" role="group" style="display:flex">
-	  					<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" style="margin-top:15px; flex:1" 
-	  						onclick="window.location.href='{{url_for('sendpose', robotdata=robot+ '+' +pose.name )}}';">{{ pose.name }}
-	  					</button>
-	  				</div>
-	  			{% endfor %}
-	  		</div>
+<div class="container-fluid">
+	<div class="row">
+		{% for pose in robot_poses %}
+			<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" 
+			onclick="window.location.href='{{url_for('sendpose', robotdata=selected_robot+ '+' +pose.name )}}';">{{ pose.name }}</button>
 		{% endfor %}
 	</div>
+</div>
 
 
-	<div class="robot-info">
+<!-- </ul>
 
-	</div>
+<div class="dropdown-content" style="margin-bottom: 75px">
+	{% for robot in robotlist %}
+  		<div role="tabpanel" class="tab-pane fade" id="{{ robot }}">
+  			{% for pose in robotlist[robot] %}
+  				<div class="btn-group" role="group" style="display:flex">
+  					<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" style="margin-top:15px; flex:1" 
+  						onclick="window.location.href='{{url_for('sendpose', robotdata=robot+ '+' +pose.name )}}';">{{ pose.name }}
+  					</button>
+  				</div>
+  			{% endfor %}
+  		</div>
+	{% endfor %}
+</div>
+ -->
+
+<div class="robot-info">
+
 </div>
 
 {% endblock %}

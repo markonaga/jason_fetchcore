@@ -30,6 +30,10 @@ assets.register('main_js', js)
 # Global robot dictionary for optimization purposes
 robot_dict = {}
 
+# Global list of robot names for optimization purposes
+robot_names = []
+
+
 @app.route('/')
 def index():
 	if session.get('logged_in'):
@@ -79,6 +83,7 @@ def connectfetch():
 def clearsession(e):
 	session.clear()
 	robot_dict.clear()
+	robot_names = []
 	flash(e)
 	return render_template("login.html")
 	
@@ -103,7 +108,22 @@ def displayrobots():
     	# Store pose list corresponding to robot key in global dictionary
 		robot_dict[robot.name] = temp
 
-	return render_template('robots.html', robotlist=robot_dict)
+		# Fill the robot_names list with each name on the fecthcore instance
+		robot_names.append(robot.name)
+
+	selected_robot = robot_names[0]
+
+	return render_template('robots.html', robotlist = robot_names, 
+						   				  selected_robot = selected_robot,
+						   				  robot_poses = robot_dict[selected_robot])
+
+
+@app.route('/displaynext/<selected_robot>')
+def displaynext(selected_robot):
+
+	return render_template('robots.html', robotlist = robot_names, 
+						   				  selected_robot = selected_robot,
+						   				  robot_poses = robot_dict[selected_robot])
 
 
 # Creates a navtask to send robot to requested pose
@@ -136,7 +156,9 @@ def sendpose(robotdata):
 	# Notify the user that their request has been processed
 	flash("Sent " + robot_n + " to " + pose_n + " at " + str(datetime.utcnow()))
 
-	return render_template('robots.html', robotlist=robot_dict)
+	return render_template('robots.html', robotlist = robot_names, 
+						   				  selected_robot = robot_n,
+						   				  robot_poses = robot_dict[robot_n])
 
 
 # Dummy route for testing
