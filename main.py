@@ -17,6 +17,7 @@ from fetchcore.resources.robots import Robot
 from fetchcore.resources.tasks.actions.definitions import NavigateAction
 from fetchcore.resources import Task
 
+from http_req import GetRobots
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -66,17 +67,21 @@ def connectfetch():
 
 	# Connetc to Fetchcore using the REST API
 	try:
-		r = requests.post(url, data = payload, timeout = 10)
+		r = requests.post(url, data = payload, verify = None, timeout = 100)
 		session['logged_in'] = True
 		json_data = json.loads(r.text)
 		session['Token'] = 'Token ' + json_data['token']
 		session['User ID'] = json_data['id']
-		return redirect(url_for('displayrobots'))
+
+		# return session['Token']
+		# return redirect(url_for('test'))
 
 	except:
 		error = "You are not authorized. Check your login credentials and try again."
+		# return redirect(url_for('clearsession', e = error))
 
-	return redirect(url_for('clearsession', e = error))
+	return redirect(url_for('test'))
+	# return redirect(url_for('clearsession', e = error))
 
 
     # Connect to Fetchcore using your credentials and the SDK
@@ -196,6 +201,14 @@ def getPose(robot_name, pose_name):
 def profile(name):
 	flash(name)
 	return render_template("profile.html", name=name)
+
+
+@app.route('/test/')
+def test():
+	get_robots()
+	# GetPoses():
+	return session['robot_names'][0]
+
 	
 
 if __name__ == '__main__':
