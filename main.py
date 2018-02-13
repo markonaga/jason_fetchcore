@@ -8,6 +8,7 @@ from flask import Flask, request, render_template, url_for, redirect, session, f
 from flask_assets import Bundle, Environment
 import requests
 import os
+import json
 
 # Fetchcore imports
 from fetchcore import configuration
@@ -30,9 +31,10 @@ assets.register('main_js', js)
 
 @app.route('/')
 def index():
-	if session.get('logged_in'):
+	if session.get('Token'):
 		# Login information saved from previous use:
-		return redirect(url_for('connectfetch'))
+		# return redirect(url_for('connectfetch'))
+		return redirect(url_for('displayrobots'))
 
 	return render_template("login.html")
 
@@ -59,19 +61,34 @@ def connectfetch():
 	error = ''
 	port = 443
 	ssl = True
+	url = 'https://' + session['hostIP'] + '/api/v1/auth/login/'
+	payload = {'username' : session['username'], 'password' : session['password']}
 
-    # Connect to Fetchcore using your credentials
+	# Connetc to Fetchcore using the REST API
 	try:
-		configuration.initialize_global_client(session['username'], session['password'], session['hostIP'], port, ssl)
-		# r = requests.post('https://' + session['hostIP'] + '/api/v1/auth/login/', 
-		# 	data = {'username' : session['username'], 'password' : session['password']})
+		r = requests.post(url, data = payload, timeout = 10)
 		session['logged_in'] = True
+		json_data = json.loads(r.text)
+		session['Token'] = 'Token ' + json_data['token']
+		session['User ID'] = json_data['id']
 		return redirect(url_for('displayrobots'))
 
 	except:
 		error = "You are not authorized. Check your login credentials and try again."
 
 	return redirect(url_for('clearsession', e = error))
+
+
+    # Connect to Fetchcore using your credentials and the SDK
+	# try:
+	# 	configuration.initialize_global_client(session['username'], session['password'], session['hostIP'], port, ssl)
+	# 	session['logged_in'] = True
+	# 	return redirect(url_for('displayrobots'))
+
+	# except:
+	# 	error = "You are not authorized. Check your login credentials and try again."
+
+	# return redirect(url_for('clearsession', e = error))
 	
 
 # Clear session and require new login
