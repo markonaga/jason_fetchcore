@@ -2,22 +2,22 @@ from flask import session
 import requests
 import json
 
-# final String jsonB = "{\"actions\":[{\"action_definition\":\"NAVIGATE\",\"inputs\":{\"limit_velocity\":true,\"max_angular_velocity\":2.5,\"max_velocity\":1.5,\"pose_id\":TargetPlaceID},\"pose_name\":null,\"preemptable\":\"HARD\",\"status\":\"NEW\"}],\"requester\":\"UserName\",\"robot\":\"RobotName\",\"status\":\"NEW\",\"type\":\"SEND\"}";
 
 
+# robot_names = []
+# robot_poses = {}
+# pose_dict = {}
 
-robot_names = []
-robot_poses = {}
-pose_dict = {}
-
+# Get a list of all available robots and poses on a specified Fetchcore instance
 def get_robots():
+
 	# Configure the URL endpoint
-	# url = 'https://' + session['hostIP']+ '/api/v1/robots'
-	url = 'https://softbank.fetchcore-cloud.com/api/v1/robots'
+	url = 'https://' + session['hostIP']+ '/api/v1/robots'
+	# url = 'https://softbank.fetchcore-cloud.com/api/v1/robots'
 
 	# Make the request
-	# robot_req = requests.get(url, headers={'AUTHORIZATION' : session['Token']}, timeout = 10)
-	robot_req = requests.get(url, headers=header, timeout = 10)
+	robot_req = requests.get(url, headers={'AUTHORIZATION' : session['Token']}, timeout = 10)
+	# robot_req = requests.get(url, headers=header, timeout = 10)
 	
 	# Convert response data to JSON object
 	data = json.loads(robot_req.text)
@@ -33,29 +33,30 @@ def get_robots():
 		map_id = robo_dict['map']
 
 		# Append the names to our robot list for use in Jinja Template
-		# session['robot_names'].append(robo_dict['name'])
-		robot_names.append(name)
+		session['robot_names'].append(robo_dict['name'])
+		# robot_names.append(name)
 
 		# Pass in the map ID and get the list of poses corresponding to that robot's map
-		# session['robot_poses'][name] = get_poses(map_id)
-		robot_poses[name] = get_poses(map_id)
+		session['robot_poses'][name] = get_poses(map_id)
+		# robot_poses[name] = get_poses(map_id)
 
-	print(robot_names)
-	print(robot_poses)
+	# print(robot_names)
+	# print(robot_poses)
 
 
-# Returns a list of pose from specified map 
+# Returns a list of poses from specified map 
 def get_poses(map_id):
+
 	# Temporary list for storing the pose names
 	pose_names = []
 
 	# Configure the URL endpoint
-	# url = 'https://' + session['hostIP'] + /api/v1/maps/' + str(map_id) + '/annotations'
-	url = 'https://softbank.fetchcore-cloud.com/api/v1/maps/' + str(map_id) + '/annotations'
+	url = 'https://' + session['hostIP'] + '/api/v1/maps/' + str(map_id) + '/annotations'
+	# url = 'https://softbank.fetchcore-cloud.com/api/v1/maps/' + str(map_id) + '/annotations'
 	
 	# Make the request
-	# robot_req = requests.get(url, headers={'AUTHORIZATION' : session['Token']}, timeout = 10)
-	map_req = requests.get(url, headers=header, timeout = 10)
+	map_req = requests.get(url, headers={'AUTHORIZATION' : session['Token']}, timeout = 10)
+	# map_req = requests.get(url, headers=header, timeout = 10)
 
 	# Convert response data to JSON object
 	raw_json = json.loads(map_req.text)
@@ -68,28 +69,23 @@ def get_poses(map_id):
 
 	# Get each of the pose names
 	for index, pose in enumerate(pose_list):
-		pose_names.append(pose['name'])
-		pose_dict[pose['name']] = pose['id']
+		pose_name = pose['name']
+		pose_names.append(pose_name)
+		session['pose_dict'][pose_name] = pose['id']
 
 
 	# Convert from Unicode to JSON
-	pretty_list = json.dumps(pose_names)
+	# pretty_list = json.dumps(pose_names)
 
-	# print(pretty_list)
-	# print(pose_dict)
-
-	return pretty_list
+	# return pretty_list
+	return pose_names
 
 
-# int pose_id
-# string pose_name
-def create_nav_action(robot_name, pose_name, pose_id):
-	username ='jvranek@innovation-matrix.com'
-	task_template = 'HMI Button Test'
+def create_nav_action(robot_name, pose_id):
+	# username ='jvranek@innovation-matrix.com'
 	# Configure the URL endpoint
-	url = 'https://softbank.fetchcore-cloud.com/api/v1/tasks/'
-	# url = 'https://' + session['hostIP']+ '/api/v1/tasks/'
-
+	# url = 'https://softbank.fetchcore-cloud.com/api/v1/tasks/'
+	url = 'https://' + session['hostIP']+ '/api/v1/tasks/'
 
 	# Configure the body of the request 
 	nav_template = {
@@ -101,17 +97,11 @@ def create_nav_action(robot_name, pose_name, pose_id):
 				    'max_angular_velocity' : 2.5,
 				    'max_velocity' : 1.5,
 			    	'pose_id' : pose_id,
-				    # 'goal_pose' : {
-				    # 	'theta': -1.58812530744,
-        #         		'y': -11.20763476566,
-        #         		'x': 127.31641013818,
-				    # },
-				    # 'pose_name' : pose_name,
 	    			},
 	    		'preemptable' : 'HARD',
 			    'status' : 'NEW'
 			}],
-	    'requester' : username,
+	    'requester' : session['username'],
 	    'robot': robot_name,
 	    'status': 'NEW',
 	    'type' : 'SEND'
@@ -121,14 +111,23 @@ def create_nav_action(robot_name, pose_name, pose_id):
 
 	nav_str = json.dumps(nav_template)
 
-	nav_req = requests.post(url, headers=header, data=nav_str, timeout = 10)
-	print(nav_req.text)
+	# Make the request
+	nav_req = requests.post(url, headers={'AUTHORIZATION' : session['Token'], 
+										'content-type' : 'application/json',
+										'Accept-Language' : 'jp'}, 
+										timeout = 10, 
+										data = nav_str)
+
+	return nav_req.text
+	
+	# nav_req = requests.post(url, headers=header, data=nav_str, timeout = 10)
+	# print(nav_req.text)
 
 
-if __name__ == '__main__':
-	# get_robots()
-	get_poses(14)
-	create_nav_action('freight64', 'Conference Room', pose_dict['Conference Room'])	
+# if __name__ == '__main__':
+# 	# get_robots()
+# 	get_poses(14)
+# 	create_nav_action('freight64', 'Conference Room', pose_dict['Conference Room'])	
 
 
 
