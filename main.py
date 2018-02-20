@@ -21,7 +21,8 @@ from fetchcore.resources import Task
 from http_req import get_robots, create_nav_action
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+# app.secret_key = os.urandom(24)
+app.secret_key = 'super test key'
 
 # Bundle my js files
 js = Bundle('login.js', 'jquery-3.2.1.min.js', 'js/bootstrap.min.js',  output='gen/main.js')
@@ -49,9 +50,9 @@ def index():
 @app.route('/login/', methods=['POST'])
 def login():
 	if request.method == 'POST':
-		session['username'] = request.form.get('username', None)
-		session['password'] = request.form.get('pass', None)
-		session['hostIP'] = request.form.get('hostIP', None)
+		session['username'] = request.form.get('username', 'default_user')
+		session['password'] = request.form.get('pass', 'default_pass')
+		session['hostIP'] = request.form.get('hostIP', 'default_ip')
 		session['robot_names'] = []
 		session['robot_poses'] = {}
 		session['pose_dict'] = {}
