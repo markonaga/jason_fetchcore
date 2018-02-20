@@ -3,6 +3,9 @@ import requests
 import json
 
 
+# header = {'AUTHORIZATION' : 'Token 5fef8810c6692d339a472def4814d2d7fc7db110', 
+		# 'content-type' : 'application/json',
+		# 'Accept-Language' : 'jp'} 
 
 # robot_names = []
 # robot_poses = {}

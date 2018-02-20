@@ -10,20 +10,36 @@
 		<!-- List out avaliable robots -->
 		{% for robot in robotlist %}
 			{% if robot != selected_robot %}
-				<!-- <li><a href="#{{ robot }}">{{ robot }} </a></li> -->
-				<li onclick="window.location.href='{{url_for('displaynext',selected_robot=robot)}}'">{{ robot }}</li>
+				<li onclick="window.location.href='{{url_for('displaynext',selected_robot=robot)}}'"
+				style="text-align: center;">{{ robot }}</li>
 			{% endif %}
 		{% endfor %}
 	</ul>
 </div>
 
 <div class="container-fluid">
-	<div class="row">
-		{% for pose in robot_poses %}
-			<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" 
-			onclick="window.location.href='{{url_for('sendpose', robotdata=selected_robot+ '+' +pose )}}';">{{ pose }}</button>
-		{% endfor %}
-	</div>
+	<!-- cycle through each robot pose and append a button -->
+	{% for pose in robot_poses %}
+
+	<!-- insert rows every 3 poses -->
+		{% if loop.index0 % 3 == 0 %}  
+			<div class="row" style="font-size: xx-large">
+		{% endif %}
+
+			<div class="col-md-4 col-sm-4" style="margin-top: 2.5vh; margin-bottom: 2.5vh; font-size: larger">
+				<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" 
+					style=" padding-top:10vh; padding-bottom:10vh; font-size: larger; margin: auto; width: 100%"
+					onclick="window.location.href='{{url_for('sendpose', robotdata=selected_robot+ '+' +pose )}}';"
+					>{{ pose }}
+				</button>
+			</div>
+
+		<!-- close the row divs -->
+		{% if loop.index0 % 3 == 2 or loop.last %}
+			</div>
+		{% endif %}
+
+	{% endfor %}
 </div>
 
 
