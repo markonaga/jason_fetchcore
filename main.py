@@ -9,6 +9,7 @@ from flask_assets import Bundle, Environment
 import requests
 import os
 import json
+import time
 
 # Fetchcore imports
 from fetchcore import configuration
@@ -70,21 +71,23 @@ def connectfetch():
 	url = 'https://' + session['hostIP'] + '/api/v1/auth/login/'
 	payload = {'username' : session['username'], 'password' : session['password']}
 
-	# Connetc to Fetchcore using the REST API
-	try:
-		r = requests.post(url, data = payload, verify = None, timeout = 100)
-		json_data = json.loads(r.text)
-		session['Token'] = 'Token ' + json_data['token']
-		session['User ID'] = json_data['id']
+	# Connect to Fetchcore using the REST API
+	for i in range(5):
+		try:
+			r = requests.post(url, data = payload, verify = None)
+			json_data = json.loads(r.text)
+			session['Token'] = 'Token ' + json_data['token']
 
-		return redirect(url_for('displayrobots'))
+		except Exception as error:
+			# error = "You are not authorized. Check your login credentials and try again."
+			time.sleep(1)
+			if i == 4:
+				return redirect(url_for('clearsession', e = error))
+		else:
+			# If the try block succeeds, redirect to display robots
+			return redirect(url_for('displayrobots'))
 
-	except:
-		error = "You are not authorized. Check your login credentials and try again."
-		# return redirect(url_for('clearsession', e = error))
-
-	return redirect(url_for('displayrobots'))
-	# return redirect(url_for('clearsession', e = error))
+	return redirect(url_for('clearsession', e = error))
 
 
     # Connect to Fetchcore using your credentials and the SDK
@@ -111,7 +114,12 @@ def clearsession(e):
 @app.route('/displayrobots/')
 def displayrobots():
 	# Get a list of every robot: populates session['robot_names'], session['robot_poses'], session['pose_dict']
-	get_robots()
+	try:
+		# Should catch the case where the session token is present but expired
+		get_robots()
+
+	except Exception as error:
+		return redirect(url_for('clearsession', e = error))
 
 	selected_robot = session['robot_names'][0]
 
@@ -127,10 +135,19 @@ def sendpose(robotdata):
 	robot_n = data[0] 
 	pose_n = data[1]
 
-	poop = create_nav_action(robot_n, session['pose_dict'][pose_n])	
+	response = create_nav_action(robot_n, session['pose_dict'][pose_n])	
 
-	# Notify the user that their request has been processed
-	flash("Sent " + robot_n + " to " + pose_n + " at " + str(datetime.utcnow()))
+	if response == 201:
+		# Notify the user that their request has been processed
+
+		flash("Sent " + robot_n + " to " + pose_n + " at " + str(datetime.utcnow()))
+
+	else:
+		# Notify the user that their request has failed
+		flash('Failed to create Nav Action, reason: ' + str(response))
+		
+
+	
 
 	return render_template('robots.html', robotlist = session['robot_names'], 
 						   				  selected_robot = robot_n,
@@ -211,20 +228,20 @@ def displaynext(selected_robot):
 
 
 
-def getPose(robot_name, pose_name):
-	# Get a list of every robot
-	robots = Robot.list()
-	# Cycle through each robot
-	for robot in robots:
-		# Look for the correct robot
-		if robot.name == robot_name:
-			# Load the robots map
-			robots_map = robot.map
-			# Cycle through each pose
-			for pose in robots_map.poses:
-				# Return the correct pose object
-				if pose.name == pose_name:
-					return pose
+# def getPose(robot_name, pose_name):
+# 	# Get a list of every robot
+# 	robots = Robot.list()
+# 	# Cycle through each robot
+# 	for robot in robots:
+# 		# Look for the correct robot
+# 		if robot.name == robot_name:
+# 			# Load the robots map
+# 			robots_map = robot.map
+# 			# Cycle through each pose
+# 			for pose in robots_map.poses:
+# 				# Return the correct pose object
+# 				if pose.name == pose_name:
+# 					return pose
 		
 
 
@@ -240,7 +257,6 @@ def test():
 	get_robots()
 	# GetPoses():
 	return session['robot_names'][0]
-
 	
 
 if __name__ == '__main__':
