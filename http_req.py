@@ -134,28 +134,20 @@ def create_nav_action(robot_name, pose_id):
 	nav_str = json.dumps(nav_template)
 
 	# Make the request (multiple times in case where there is a 500 error)
-	for i in range(5):
-		try:
-			nav_req = requests.post(url, headers={'AUTHORIZATION' : session['Token'], 
-										'content-type' : 'application/json',
-										'Accept-Language' : 'jp'}, 
-										timeout = 10, 
-										data = nav_str)
+	try:
+		nav_req = requests.post(url, headers={'AUTHORIZATION' : session['Token'], 
+									'content-type' : 'application/json',
+									'Accept-Language' : 'jp'}, 
+									timeout = 10, 
+									data = nav_str)
 
-		except Exception as error:
-			# Wait a second before retrying
-			time.sleep(1)
-			if i == 4:
-				return nav_req.status_code
-		else:
-			# Check if the response was bad
-			if nav_req.status_code == 500 or 400:
-				# Bad response, so retry
-				continue
-
-			# Good response,
-			return status_code
-
+	except Exception as error:
+		# Wait a second before retrying
+		return error
+	else:
+		# Good response,
+		return nav_req.status_code
+		
 	return nav_req.status_code
 	
 	# nav_req = requests.post(url, headers=header, data=nav_str, timeout = 10)

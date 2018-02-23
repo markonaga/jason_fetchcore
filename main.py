@@ -5,7 +5,6 @@ from datetime import datetime
 
 # Flask imports
 from flask import Flask, request, render_template, url_for, redirect, session, flash
-from flask_assets import Bundle, Environment
 import requests
 import os
 import json
@@ -21,15 +20,11 @@ from fetchcore.resources import Task
 from http_req import get_robots, create_nav_action
 
 app = Flask(__name__)
-# app.secret_key = os.urandom(24)
-app.secret_key = 'super test key'
 
-# Bundle my js files
-js = Bundle('login.js', 'jquery-3.2.1.min.js', 'js/bootstrap.min.js',  output='gen/main.js')
-assets = Environment(app)
-
-# Register bundle name to be used in template
-assets.register('main_js', js)
+# Set the APP_SETTINGS environment variable in VENV with terminal 
+# export APP_SETTINGS="config.DevelopmentConfig" 
+# export APP_SETTINGS="config.ProductionConfig"
+app.config.from_object(os.environ['APP_SETTINGS'])
 
 
 @app.route('/')
@@ -253,11 +248,11 @@ def profile(name):
 	return render_template("profile.html", name=name)
 
 
-@app.route('/test/')
-def test():
-	get_robots()
-	# GetPoses():
-	return session['robot_names'][0]
+# @app.route('/test/')
+# def test():
+# 	get_robots()
+# 	# GetPoses():
+# 	return session['robot_names'][0]
 	
 
 if __name__ == '__main__':
