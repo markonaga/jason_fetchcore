@@ -26,6 +26,8 @@ app = Flask(__name__)
 # export APP_SETTINGS="config.ProductionConfig"
 app.config.from_object(os.environ['APP_SETTINGS'])
 
+app.secret_key = 'test'
+
 
 @app.route('/')
 def index():

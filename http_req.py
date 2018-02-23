@@ -48,6 +48,10 @@ def get_robots():
 		name = robo_dict['name']
 		map_id = robo_dict['map']
 
+		# Edge case where there are no maps associated with a Robot
+		if map_id is None:
+			continue
+
 		# Append the names to our robot list for use in Jinja Template
 		session['robot_names'].append(robo_dict['name'])
 		# robot_names.append(name)
@@ -147,7 +151,7 @@ def create_nav_action(robot_name, pose_id):
 	else:
 		# Good response,
 		return nav_req.status_code
-		
+
 	return nav_req.status_code
 	
 	# nav_req = requests.post(url, headers=header, data=nav_str, timeout = 10)
