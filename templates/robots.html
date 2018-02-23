@@ -23,12 +23,12 @@
 
 	<!-- insert rows every 3 poses -->
 		{% if loop.index0 % 3 == 0 %}  
-			<div class="row" style="font-size: xx-large">
+			<div class="row" style="font-size: xx-large; display: flex; align-items: center">
 		{% endif %}
 
 			<div class="col-md-4 col-sm-4" style="margin-top: 2.5vh; margin-bottom: 2.5vh; font-size: larger">
 				<button type="button" class="btn btn-primary btn-lg" id="{{ pose.name }}" 
-					style=" padding-top:10vh; padding-bottom:10vh; font-size: larger; margin: auto; width: 100%"
+					style=" padding-top:10vh; padding-bottom:10vh; font-size: larger; white-space: normal; margin: auto; width: 100%; font-weight: bold"
 					onclick="window.location.href='{{url_for('sendpose', robotdata=selected_robot+ '+' +pose )}}';"
 					>{{ pose }}
 				</button>
