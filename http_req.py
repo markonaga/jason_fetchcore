@@ -4,20 +4,11 @@ import json
 import time
 
 
-# header = {'AUTHORIZATION' : 'Token 5fef8810c6692d339a472def4814d2d7fc7db110', 
-		# 'content-type' : 'application/json',
-		# 'Accept-Language' : 'jp'} 
-
-# robot_names = []
-# robot_poses = {}
-# pose_dict = {}
-
 # Get a list of all available robots and poses on a specified Fetchcore instance
 def get_robots():
 
 	# Configure the URL endpoint
 	url = 'https://' + session['hostIP']+ '/api/v1/robots'
-	# url = 'https://softbank.fetchcore-cloud.com/api/v1/robots'
 
 	# Make the request (multiple times in case where there is a 500 error)
 	for i in range(5):
@@ -58,10 +49,7 @@ def get_robots():
 
 		# Pass in the map ID and get the list of poses corresponding to that robot's map
 		session['robot_poses'][name] = get_poses(map_id)
-		# robot_poses[name] = get_poses(map_id)
 
-	# print(robot_names)
-	# print(robot_poses)
 
 
 # Returns a list of poses from specified map 
@@ -72,7 +60,6 @@ def get_poses(map_id):
 
 	# Configure the URL endpoint
 	url = 'https://' + session['hostIP'] + '/api/v1/maps/' + str(map_id) + '/annotations'
-	# url = 'https://softbank.fetchcore-cloud.com/api/v1/maps/' + str(map_id) + '/annotations'
 	
 	# Make the request (multiple times in case where there is a 500 error)
 	for i in range(5):
@@ -108,9 +95,7 @@ def get_poses(map_id):
 
 
 def create_nav_action(robot_name, pose_id):
-	# username ='jvranek@innovation-matrix.com'
 	# Configure the URL endpoint
-	# url = 'https://softbank.fetchcore-cloud.com/api/v1/tasks/'
 	url = 'https://' + session['hostIP']+ '/api/v1/tasks/'
 
 	# Configure the body of the request 
@@ -154,9 +139,6 @@ def create_nav_action(robot_name, pose_id):
 
 	return nav_req.status_code
 	
-	# nav_req = requests.post(url, headers=header, data=nav_str, timeout = 10)
-	# print(nav_req.text)
-
 
 # if __name__ == '__main__':
 # 	# get_robots()

@@ -26,18 +26,11 @@ app = Flask(__name__)
 # export APP_SETTINGS="config.ProductionConfig"
 app.config.from_object(os.environ['APP_SETTINGS'])
 
-app.secret_key = 'test'
-
 
 @app.route('/')
 def index():
 	if session.get('Token'):
 		# Login information saved from previous use:
-
-		# Reset session dictionaries (like refreshing)
-		session['robot_names'] = []
-		session['robot_poses'] = {}
-		session['pose_dict'] = {}
 		return redirect(url_for('displayrobots'))
 
 	return render_template("login.html")
@@ -86,18 +79,6 @@ def connectfetch():
 			return redirect(url_for('displayrobots'))
 
 	return redirect(url_for('clearsession', e = error))
-
-
-    # Connect to Fetchcore using your credentials and the SDK
-	# try:
-	# 	configuration.initialize_global_client(session['username'], session['password'], session['hostIP'], port, ssl)
-	# 	session['logged_in'] = True
-	# 	return redirect(url_for('displayrobots'))
-
-	# except:
-	# 	error = "You are not authorized. Check your login credentials and try again."
-
-	# return redirect(url_for('clearsession', e = error))
 	
 
 # Clear session and require new login
@@ -112,12 +93,15 @@ def clearsession(e):
 @app.route('/displayrobots/')
 def displayrobots():
 	# Get a list of every robot: populates session['robot_names'], session['robot_poses'], session['pose_dict']
-	try:
-		# Should catch the case where the session token is present but expired
-		get_robots()
 
-	except Exception as error:
-		return redirect(url_for('clearsession', e = error))
+	# Check if the user already has robot data cached in their session cookie
+	if not session['robot_names']:
+		try:
+			# Should catch the case where the session token is present but expired
+			get_robots()
+
+		except Exception as error:
+			return redirect(url_for('clearsession', e = error))
 
 	selected_robot = session['robot_names'][0]
 
@@ -151,35 +135,6 @@ def sendpose(robotdata):
 						   				  selected_robot = robot_n,
 						   				  robot_poses = session['robot_poses'][robot_n])
 
-# # Get robot information (IDs, Poses) using SDK
-# @app.route('/displayrobots/')
-# def displayrobots():
-# 	# Get a list of every robot
-# 	robots = Robot.list()
-
-# 	for robot in robots:
-# 		# Get each robots map
-# 		robots_map = robot.map
-
-#     	# Temporary list to append pose names
-# 		temp = []
-
-#     	# Get poses from each map and append to list
-# 		for pose in robots_map.poses:
-# 			temp.append(pose.name)
-
-#     	# Store pose list corresponding to robot key in global dictionary
-# 		session['robot_poses'][robot.name] = temp
-
-# 		# Fill the robot_names list with each name on the fecthcore instance
-# 		session['robot_names'].append(robot.name)
-
-# 	selected_robot = session['robot_names'][0]
-
-# 	return render_template('robots.html', robotlist = session['robot_names'], 
-# 						   				  selected_robot = selected_robot,
-# 						   				  robot_poses = session['robot_poses'][selected_robot])
-
 
 @app.route('/displaynext/<selected_robot>')
 def displaynext(selected_robot):
@@ -187,60 +142,6 @@ def displaynext(selected_robot):
 	return render_template('robots.html', robotlist = session['robot_names'], 
 						   				  selected_robot = selected_robot,
 						   				  robot_poses = session['robot_poses'][selected_robot])
-
-
-# # Creates a navtask to send robot to requested pose
-# @app.route('/sendpose/<robotdata>')
-# def sendpose(robotdata):
-# 	# Robotdata is in the form "robot_name+pose_name"
-# 	data = robotdata.split('+')
-# 	robot_n = data[0] 
-# 	pose_n = data[1]
-
-# 	# Get the entire pose object from our saved dictionary
-# 	# pose = [elem for elem in session['robot_poses'][robot_n] if elem == pose_n]
-# 	pose = getPose(robot_n, pose_n)
-
-# 	goal_pose = {
-# 		"x": pose.x,
-# 		"y": pose.y,
-# 		"theta": pose.theta
-# 		}
-
-# 	# Create nav action
-# 	nav_action = NavigateAction(goal_pose=goal_pose)
-
-#     # Create nav task
-# 	nav_task = Task(name="Nav to Poses", type="NAVIGATE",
-#                     actions=[nav_action], robot=robot_n)
-
-#     # Save task to update remote server
-# 	nav_task.save()
-
-# 	# Notify the user that their request has been processed
-# 	flash("Sent " + robot_n + " to " + pose_n + " at " + str(datetime.utcnow()))
-
-# 	return render_template('robots.html', robotlist = session['robot_names'], 
-# 						   				  selected_robot = robot_n,
-# 						   				  robot_poses = session['robot_poses'][robot_n])
-
-
-
-# def getPose(robot_name, pose_name):
-# 	# Get a list of every robot
-# 	robots = Robot.list()
-# 	# Cycle through each robot
-# 	for robot in robots:
-# 		# Look for the correct robot
-# 		if robot.name == robot_name:
-# 			# Load the robots map
-# 			robots_map = robot.map
-# 			# Cycle through each pose
-# 			for pose in robots_map.poses:
-# 				# Return the correct pose object
-# 				if pose.name == pose_name:
-# 					return pose
-		
 
 
 # Dummy route for testing
