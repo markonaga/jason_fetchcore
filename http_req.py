@@ -80,10 +80,15 @@ def get_poses(map_id):
 	raw_json = json.loads(map_req.text)
 
 	# Pull 'poses' dictionary from body 
-	data = raw_json[7]  # FOR NON UPDATED INSTANCES THIS IS raw_json[5]
-
-	# Pull out list from the dictionary
-	pose_list = data['poses']
+	try:
+		data = raw_json[5] 
+		# Pull out list from the dictionary
+		pose_list = data['poses']
+	except:
+		# FOR updated fetch instances, the api reponse contains more fields
+		data = raw_json[7]  
+		# Pull out list from the dictionary
+		pose_list = data['poses']
 
 	# Get each of the pose names and append to a list
 	for index, pose in enumerate(pose_list):
