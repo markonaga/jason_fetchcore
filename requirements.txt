@@ -24,4 +24,3 @@ webassets==0.12.1
 websocket-client==0.40.0
 Werkzeug==0.14.1
 zope.interface==4.4.3
-fetchcorepy-0.17.21-py2-none-any.whl
