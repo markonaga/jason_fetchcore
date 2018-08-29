@@ -10,13 +10,6 @@ import os
 import json
 import time
 
-# Fetchcore imports
-from fetchcore import configuration
-from fetchcore.resources.maps import Map
-from fetchcore.resources.robots import Robot
-from fetchcore.resources.tasks.actions.definitions import NavigateAction
-from fetchcore.resources import Task
-
 from http_req import get_robots, create_nav_action
 
 app = Flask(__name__)
